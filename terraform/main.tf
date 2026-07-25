@@ -104,3 +104,13 @@ resource "aws_instance" "k8s_node" {
     Name = "${var.environment}-k8s-node"
   }
 }
+# Add to terraform/main.tf
+terraform {
+  backend "s3" {
+    bucket         = "your-tf-state-bucket"
+    key            = "capstone/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
