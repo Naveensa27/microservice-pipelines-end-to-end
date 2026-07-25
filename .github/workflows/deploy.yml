@@ -55,7 +55,7 @@ jobs:
 
   deploy-to-k8s:
     needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.KUBECONFIG != ''
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -64,8 +64,10 @@ jobs:
       - name: Set Kubeconfig Context
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          echo "${{ secrets.KUBECONFIG }}" | base64 -d > ~/.kube/config
           chmod 600 ~/.kube/config
+          kubectl cluster-info
+          kubectl get nodes
 
       - name: Update Deployment Manifest Image Tag
         run: |
